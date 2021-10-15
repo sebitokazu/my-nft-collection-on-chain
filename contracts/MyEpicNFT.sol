@@ -16,6 +16,8 @@ contract MyEpicNFT is ERC721URIStorage {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
+  uint256 constant public MAX_SUPPLY = 100;
+
 
     // This is our SVG code. All we need to change is the word that's displayed. Everything else stays the same.
   // So, we make a baseSvg variable here that all our NFTs can use.
@@ -36,6 +38,8 @@ contract MyEpicNFT is ERC721URIStorage {
   ];
   string[] firstWords = ["Bullish", "Bearish", "Epic", "Rocket", "Dip"];
   string[] secondWords = ["ETH", "BTC", "DOT", "LUNA", "VET"];
+
+  event NewEpicNFTMinted(address sender, uint256 tokenId);
 
   // We need to pass the name of our NFTs token and it's symbol.
   constructor() ERC721 ("MochiNFT", "MOCHI") {
@@ -71,6 +75,8 @@ contract MyEpicNFT is ERC721URIStorage {
   function makeAnEpicNFT() public {
      // Get the current tokenId, this starts at 0.
     uint256 newItemId = _tokenIds.current();
+
+    require(newItemId < MAX_SUPPLY, "All NFTs were minted");
 
 
     // We go and randomly grab one word from each of the three arrays.
@@ -117,5 +123,11 @@ contract MyEpicNFT is ERC721URIStorage {
 
     // Increment the counter for when the next NFT is minted.
     _tokenIds.increment();
+
+    emit NewEpicNFTMinted(msg.sender, newItemId);
   }
+
+    function getTotalNFTsMinted() public view returns(uint256){
+      return _tokenIds.current();
+    }
 }
